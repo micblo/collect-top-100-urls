@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -57,8 +58,9 @@ func GenerateURLs(sourcePath, outputPath string, maxSize int, verbose bool) erro
 
 			// Write
 			size := 0
+			w := bufio.NewWriter(fp)
 			for size < maxSize {
-				n, err := fp.WriteString(urls[rand.Intn(len(urls))] + "\n")
+				n, err := w.WriteString(urls[rand.Intn(len(urls))] + "\n")
 				if err != nil {
 					chErr <- fmt.Errorf("write file: %v error: %v", path, err)
 					return
@@ -66,6 +68,7 @@ func GenerateURLs(sourcePath, outputPath string, maxSize int, verbose bool) erro
 
 				size += n
 			}
+			_ = w.Flush()
 
 			ch <- size
 		}(i, maxSize/childs)
