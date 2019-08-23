@@ -1,4 +1,4 @@
-result.txt
+../../dataset/result.txt
 *.exe
 *.cpu
 test/
