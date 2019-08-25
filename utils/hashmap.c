@@ -164,7 +164,7 @@ unsigned long crc32(const unsigned char *s, unsigned int len)
 /*
  * Hashing function for a string
  */
-unsigned int hashmap_hash_int(hashmap_map * m, char* keystring){
+unsigned int hashmap_hash_int(hashmap_map * m, char* keystring) {
 
     unsigned long key = crc32((unsigned char*)(keystring), strlen(keystring));
 
@@ -278,15 +278,26 @@ int hashmap_put(map_t in, char* key, any_t value){
 	m->data[index].data = value;
 	m->data[index].key = key;
 	m->data[index].in_use = 1;
-	m->size++; 
+	m->size++;
 
 	return MAP_OK;
+}
+
+int hashmap_put_to_node(any_t node_, any_t value) {
+    struct _hashmap_element *elem = node_;
+    elem->data = value;
+
+    return MAP_OK;
 }
 
 /*
  * Get your pointer out of the hashmap with a key
  */
-int hashmap_get(map_t in, char* key, any_t *arg){
+int hashmap_get(map_t in, char* key, any_t *arg) {
+    return hashmap_get_with_node(in, key, arg, NULL);
+}
+
+int hashmap_get_with_node(map_t in, char* key, any_t *arg, any_t *node) {
 	int curr;
 	int i;
 	hashmap_map* m;
@@ -301,9 +312,12 @@ int hashmap_get(map_t in, char* key, any_t *arg){
 	for(i = 0; i<MAX_CHAIN_LENGTH; i++){
 
         int in_use = m->data[curr].in_use;
-        if (in_use == 1){
-            if (strcmp(m->data[curr].key,key)==0){
+        if (in_use == 1) {
+            if (strcmp(m->data[curr].key, key)==0){
                 *arg = (m->data[curr].data);
+                if (node != NULL) {
+                    *node = &m->data[curr];
+                }
                 return MAP_OK;
             }
 		}
@@ -312,6 +326,9 @@ int hashmap_get(map_t in, char* key, any_t *arg){
 	}
 
 	*arg = NULL;
+	if (node != NULL) {
+        *node = NULL;
+	}
 
 	/* Not found */
 	return MAP_MISSING;

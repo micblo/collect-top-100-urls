@@ -50,11 +50,13 @@ extern int hashmap_iterate(map_t in, PFany f, any_t item);
 /*
  * Add an element to the hashmap. Return MAP_OK or MAP_OMEM.
  */
+extern int hashmap_put_to_node(any_t node_, any_t value);
 extern int hashmap_put(map_t in, char* key, any_t value);
 
 /*
  * Get an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
+extern int hashmap_get_with_node(map_t in, char* key, any_t *arg, any_t *node);
 extern int hashmap_get(map_t in, char* key, any_t *arg);
 
 /*
@@ -77,5 +79,10 @@ extern void hashmap_free(map_t in);
  * Get the current size of a hashmap
  */
 extern int hashmap_length(map_t in);
+
+/*
+ * CRC32
+ */
+unsigned long crc32(const unsigned char *s, unsigned int len);
 
 #endif

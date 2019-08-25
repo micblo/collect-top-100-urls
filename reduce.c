@@ -71,11 +71,14 @@ void traversing(void *_job) {
         len = strlen(url);
         if (len == 0) continue;
 
-        if (hashmap_get(JOB_BUCKET.map, url, (void *)&n) == MAP_MISSING) {
-            n = 0;
+        void *node;
+        if (hashmap_get_with_node(JOB_BUCKET.map, url, (void *)&n, &node) == MAP_MISSING) {
+            hashmap_put(JOB_BUCKET.map, url, (void *)1);
+        } else {
+            // DIRECTLY WRITE NUMBER TO NODE
+            n++;
+            hashmap_put_to_node(node, (void *)n);
         }
-        n++;
-        hashmap_put(JOB_BUCKET.map, url, (void *)n);
     }
     gettimeofday(&endtime, 0);
 
