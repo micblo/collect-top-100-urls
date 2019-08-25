@@ -18,7 +18,7 @@ func GenerateURLs(sourcePath, outputPath string, maxSize int, verbose bool, chil
 	}
 
 	// Read URLs from sample file
-	b, err := ioutil.ReadFile("./urls.txt")
+	b, err := ioutil.ReadFile(sourcePath)
 	if err != nil {
 		return fmt.Errorf("read file: %v error: %v", sourcePath, err)
 	}
@@ -32,6 +32,8 @@ func GenerateURLs(sourcePath, outputPath string, maxSize int, verbose bool, chil
 		}
 		urls = append(urls, lineStr)
 	}
+
+	fmt.Printf("url size: %d\n", len(urls))
 
 	// Start generate
 	size := 0
@@ -49,7 +51,7 @@ func GenerateURLs(sourcePath, outputPath string, maxSize int, verbose bool, chil
 			// Open output file
 			path := outputPath + "_" + strconv.Itoa(index)
 
-			fp, err := os.OpenFile(path, os.O_CREATE, 0666)
+			fp, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0666)
 			defer fp.Close()
 
 			if err != nil {

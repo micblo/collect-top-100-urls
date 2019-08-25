@@ -32,6 +32,20 @@ real size = 107374182438
 time = 17m59.5401807s
 ```
 
+Device:
+- CPU: 2.8 GHz Intel Core i7
+- Disk: APPLE SSD AP0512M
+- Go version: go version go1.12.9 darwin/amd64
+
+4 thread, 100GB File, merged: 
+
+```
+output path = ../../dataset/3.txt
+max size = 107374182400
+real size = 107374182478
+time = 6m34.373907834s
+```
+
 ## Future
 
 When the file generated is too big,
