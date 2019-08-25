@@ -4,7 +4,7 @@
 
 ## 关键词
 
-TOP N、分治、最小堆、多线程、mmap、BKDRHash
+TOP N、分治、最小堆、多线程、mmap、BKDRHash、crc32
 
 ## 原理
 
@@ -61,6 +61,7 @@ TOP N、分治、最小堆、多线程、mmap、BKDRHash
 统计时需要使用 `hashmap` 实现 KV 存储。Key 为 URL，Value 为当前该URL已经出现的次数。
 在实际使用中，我选了一个公有领域的 `hashmap` 实现。它使用 `crc32` 计算Hash，当出现碰撞时使用链表遍历。
 每匹配到一个URL，就获取该URL的已经出现的次数。加1后再放回到 `hashmap`。
+为了减少 hash 的计算，当该 key 已经被找到时，`get` 函数将会直接返回存储节点，这样在 put 的时候就不需要重新寻找该节点了。
 
 每个桶完成统计后，将会遍历整个 `hashmap`，将全部URL和次数对放入限制容量为100的最小堆。
 最小堆满容量后，插入新的KV，将只会记录当前V比最小堆中最小的数还大的情况，确保最小堆中的全部成员都是当前桶的TOP 100。
@@ -112,7 +113,7 @@ merge time: 0ms
 
 ### merge
 
-最小堆的合并基本不占时间。根据82原则，可以忽略优化。
+最小堆的合并基本不占时间。根据 8:2 原则，可以忽略优化。
 
 ## 未来工作
 
@@ -128,7 +129,10 @@ partition 多线程实现稍微复杂，可以通过提前计算不同的分片�
 ### hashmap
 
 最直接可以优化的部分是 get 和 put 重复计算 Hash 的问题。
-在 get 阶段可以直接返回底层存储的节点指针，在 put 阶段直接修改节点的值，即可减少目前一半的时间。
+
+【已实现】在 get 阶段可以直接返回底层存储的节点指针，在 put 阶段直接修改节点的值，即可减少目前一半的时间。
+
+其次，利用多线程计算不同桶数据的问题。
 
 ### Hash
 
@@ -139,7 +143,3 @@ partition 多线程实现稍微复杂，可以通过提前计算不同的分片�
 感谢 [warmwaffles 提供的 hashmap 实现](https://gist.github.com/warmwaffles/6fb6786be7c86ed51fce)
 
 感谢 [armon 实现的 c-minheap-indirect](https://github.com/armon/c-minheap-indirect)
-
-## 工具
-
-- tools/generator: 一个高效生成URL的工具
